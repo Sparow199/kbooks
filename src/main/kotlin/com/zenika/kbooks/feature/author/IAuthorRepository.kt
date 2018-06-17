@@ -1,7 +1,7 @@
 package com.zenika.kbooks.feature.author
 
-import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface IAuthorRepository : PagingAndSortingRepository<Author, Long>
+interface IAuthorRepository : ReactiveMongoRepository<Author, String>

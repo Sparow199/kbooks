@@ -1,39 +1,50 @@
 package com.zenika.kbooks.feature.book
 
-import com.zenika.kbooks.util.rest.PageDto
+import com.zenika.kbooks.exception.BookNotFoundException
 import com.zenika.kbooks.util.rest.PaginationDto
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import javax.validation.Valid
 
 /**
  * Rest endpoint for books.
  */
-@Path("/book")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@Component
+@RestController
+@RequestMapping("/book")
 class BookResource {
 
     @Autowired
     private lateinit var bookService: BookService
 
-    @GET
-    @Path("/{id}")
-    fun getBook(@PathParam("id") id: Long) = bookService.getBook(id)
 
-    @GET
-    fun getBooks(@BeanParam pagination: PaginationDto): PageDto<BookDto> = bookService.getBooks(pagination)
+    @GetMapping("/{id}")
+    fun getBook(@PathVariable("id") id: String): Mono<ResponseEntity<BookDto>> = bookService.getBook(id)
+            .map { savedBook ->
+                ResponseEntity.ok(savedBook)
+            }
 
-    @POST
-    fun createBook(dto: BookDto): Long? = bookService.createBook(dto)
+    @GetMapping("")
+    fun getBooks(@ModelAttribute pagination: PaginationDto): Flux<BookDto> = bookService.getBooksPaged(pagination)
 
-    @POST
-    @Path("/{id}")
-    fun updateBook(@PathParam("id") id: Long, dto: BookDto) = bookService.updateBook(id, dto)
+    @PostMapping("")
+    fun createBook(@Valid @RequestBody dto: BookDto): Mono<ResponseEntity<Book>> = bookService.createBook(dto)
+            .map { createdBook ->
+                ResponseEntity(createdBook, HttpStatus.OK)
+            }
 
-    @DELETE
-    @Path("/{id}")
-    fun deleteBook(@PathParam("id") id: Long) = bookService.deleteBook(id)
+    @PutMapping("/{id}")
+    fun updateBook(@PathVariable("id") id: String, @Valid @RequestBody dto: BookDto): Mono<ResponseEntity<Book>> = bookService.updateBook(id, dto)
+            .map { updatedBook ->
+                ResponseEntity(updatedBook, HttpStatus.OK)
+            }
+
+    @DeleteMapping("/{id}")
+    fun deleteBook(@PathVariable("id") id: String): Mono<Void> = bookService.deleteBook(id)
+
+
 }

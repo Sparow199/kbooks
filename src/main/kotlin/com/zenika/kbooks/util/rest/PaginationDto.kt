@@ -3,17 +3,17 @@ package com.zenika.kbooks.util.rest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import javax.ws.rs.QueryParam
+import org.springframework.web.bind.annotation.RequestParam
 
 /**
  * BeanParam that stores pagination info.
  */
 data class PaginationDto(
-        @QueryParam("page")
+        @RequestParam("page")
         var page: Int = 0,
-        @QueryParam("size")
+        @RequestParam("size")
         var size: Int = 10,
-        @QueryParam("sort")
+        @RequestParam("sort")
         var sort: String? = null
 ) {
     fun toPageable(maxSize: Int = 10) : Pageable {

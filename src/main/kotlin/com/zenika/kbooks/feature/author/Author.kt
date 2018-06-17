@@ -1,15 +1,14 @@
 package com.zenika.kbooks.feature.author
 
 import com.zenika.kbooks.feature.book.Book
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
 /**
- * JPA Author entity. All parameters have a default value because Hibernate need an empty constructor.
+ * MongoDB Author document. All parameters have a default value.
  */
-@Entity
-@Table(name = "author")
-data class Author(@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-                  var id: Long? = null,
+@Document(collection = "author")
+data class Author(@Id
+                  var id: String? = null,
                   var name: String? = null,
-                  @OneToMany(mappedBy = "author")
                   var books: List<Book> = mutableListOf())
